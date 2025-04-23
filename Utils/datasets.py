@@ -1,8 +1,11 @@
 import torch
 from torch.utils.data import random_split
 
+#added by Matthew#
+import os
 
-
+'''
+#This section isn't directing to the correct file path#
 def get_dataset(dataset_name='Static_Linear_Analysis', whatAsNode='NodeAsNode', structure_num=300, special_path=None):
     if special_path != None:
         root = special_path
@@ -21,8 +24,26 @@ def get_dataset(dataset_name='Static_Linear_Analysis', whatAsNode='NodeAsNode', 
             print("No file: ", structure_graph_path)
      
     return data_list
+'''
+#new get_dataset() added by Matthew#
+def get_dataset(dataset_name='Static_Linear_Analysis', whatAsNode='NodeAsNode', structure_num=300, special_path=None):
+    if special_path is not None:
+        root = special_path
+    else:
+        root = os.path.join('Data', dataset_name)
 
+    data_list = []
+    for index in range(1, structure_num + 1):
+        folder_name = os.path.join(root, f'structure_{index}')
+        structure_graph_path = os.path.join(folder_name, f'structure_graph_{whatAsNode}.pt')
 
+        if os.path.exists(structure_graph_path):
+            graph = torch.load(structure_graph_path, weights_only=False)
+            data_list.append(graph)
+        else:
+            print("No file:", structure_graph_path)
+
+    return data_list
 
 
 def split_dataset(dataset, 
