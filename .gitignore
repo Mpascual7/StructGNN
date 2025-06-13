@@ -1,0 +1,12 @@
+
+# Ignore compiled files
+__pycache__/
+*.pyc
+
+# Ignore models and output
+*.pt
+Results/
+MP TESTING/predicted_output.pt
+
+# Ignore installers
+Miniconda3-*.sh

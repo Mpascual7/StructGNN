@@ -1,18 +1,23 @@
+import os
 import torch
 import networkx as nx
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # for 3D plots
-import torch
 
-file_path = r'C:\Users\mnwpa\OneDrive\Documents\GitHub\StructGNN\Data\Static_Linear_Analysis\structure_1\structure_graph_NodeAsNode.pt'
+# Construct path to the .pt file relative to this script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.normpath(os.path.join(script_dir, 'structure_graph_NodeAsNode.pt'))
+
+print(f"Loading graph data from: {file_path}")
 
 # Attempt to load the file with weights_only=False to bypass the error
 structure_graph = torch.load(file_path, weights_only=False)
-# Assume `data` is your PyG Data object
-# data.x is (num_nodes, 11) → [span, story, ID, x, y, z, DoF, mass_flag, load, angle, dist]
+
+# Assume `structure_graph` is your PyG Data object
+# structure_graph.x is (num_nodes, 11) → [span, story, ID, x, y, z, DoF, mass_flag, load, angle, dist]
 x, y, z = structure_graph.x[:, 3], structure_graph.x[:, 4], structure_graph.x[:, 5]
 
-# Convert to numpy
+# Convert to numpy-style dict for positions
 positions = {i: (x[i].item(), y[i].item(), z[i].item()) for i in range(structure_graph.num_nodes)}
 
 # Create undirected graph for visualization
@@ -29,6 +34,7 @@ for i in range(edge_index.shape[1]):
 fig = plt.figure(figsize=(10, 8))
 ax = fig.add_subplot(111, projection='3d')
 
+# Plot edges
 for edge in G.edges():
     x_coords = [positions[edge[0]][0], positions[edge[1]][0]]
     y_coords = [positions[edge[0]][1], positions[edge[1]][1]]
@@ -45,12 +51,11 @@ ax.scatter(xs, ys, zs, c='r', s=10)
 for node_id, (x_, y_, z_) in positions.items():
     ax.text(x_, y_, z_ + 0.1, str(node_id), fontsize=8, color='black')  # 0.1 offset to lift label above node
 
-
-#Set Axis Labels
+# Set axis labels
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
 ax.set_title('3D Structural Graph (PISA3D Model)')
+
 plt.tight_layout()
 plt.show()
-

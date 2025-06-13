@@ -1,17 +1,8 @@
 import os
-import sys
-
 print("Working directory:", os.getcwd())
-
-# Add the parent directory (StructGNN) to sys.path so Python can find 'GNN'
-script_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.abspath(os.path.join(script_dir, '..'))
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
-
 import torch
 from torch_geometric.data import Data
-from GNN.models import Structure_GraphNetwork # adjust if you're using a different model
+from GNN.models import Structure_GraphNetwork  # adjust if you're using a different model
 
 # Step 1: Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -33,18 +24,14 @@ model = Structure_GraphNetwork(
 )
 
 # Step 3: Load the state dict (weights)
-script_dir = os.path.dirname(os.path.abspath(__file__))
-checkpoint_folder = '2025_04_17__02_26_56'
-model_path = os.path.normpath(os.path.join(script_dir, '..', 'Results', 'Static_Linear_Analysis', checkpoint_folder, 'model.pt'))
+model_path = r"C:\Users\mnwpa\OneDrive\Documents\GitHub\StructGNN\Results\Static_Linear_Analysis\2025_04_17__02_26_56\model.pt"
 model.load_state_dict(torch.load( model_path, map_location=device))
 model.to(device)
 model.eval()
 
-# Step 4: Load the input graph data using a path relative to the repo root
-data_relative_path = os.path.join('Data', 'Static_Linear_Analysis', 'structure_1', 'structure_graph_NodeAsNode.pt')
-data_path = os.path.normpath(os.path.join(script_dir, '..', data_relative_path))
-print(f"Loading graph data from: {data_path}")
-data = torch.load(data_path, weights_only=False)
+# Step 4: Load the input graph data
+data_test = r"C:\Users\mnwpa\OneDrive\Documents\GitHub\StructGNN\Data\Static_Linear_Analysis\structure_1\structure_graph_NodeAsNode.pt"
+data = torch.load(data_test, weights_only=False)
 
 # Move data to device
 x = data.x.to(device)
