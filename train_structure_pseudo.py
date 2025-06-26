@@ -30,7 +30,7 @@ parser = ArgumentParser()
 # Dataset
 parser.add_argument('--dataset_name', dest='dataset_name', default='Static_Linear_Analysis', type=str)
 parser.add_argument('--whatAsNode', dest='whatAsNode', default='NodeAsNode_pseudo', type=str)
-parser.add_argument('--data_num', dest='data_num', default=100, type=int)
+parser.add_argument('--data_num', dest='data_num', default=2000, type=int)
 parser.add_argument('--train_ratio', dest='train_ratio', default=0.9, type=float)
 parser.add_argument('--normalization', dest='normalization', default=True, type=bool)
 
@@ -44,7 +44,7 @@ parser.add_argument('--gnn_act', dest='gnn_act', default='True', type=bool, help
 
 # Training
 parser.add_argument('--target', dest='target', default='all', type=str, help='which output target you are going to train, like displacement, moement, shear......')
-parser.add_argument('--epoch_num', dest='epoch_num', default=10, type=int)
+parser.add_argument('--epoch_num', dest='epoch_num', default=1000, type=int)
 parser.add_argument('--batch_size', dest='batch_size', default=1, type=int)
 parser.add_argument('--lr', dest='lr', default=5e-5, type=float)
 parser.add_argument('--loss_function', dest='loss_function', default='L1_Loss', type=str)
