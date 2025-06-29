@@ -1,27 +1,57 @@
 import os
 import torch
 
-def load_structure(structure_id):
-    """Load PyTorch Geometric data for specified structure"""
+
+def load_structure(structure_id, use_generated=False, use_pseudo=False):
+    """Load PyTorch Geometric data for specified structure
+    
+    Args:
+        structure_id: Structure number to load
+        use_generated: If True, load from Data_Generated folder, else from Data folder
+        use_pseudo: If True, load pseudo version (only applicable when use_generated=True)
+    """
     # Get the directory of this script
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Go up one level to the project root (StructGNN directory)
     project_root = os.path.dirname(script_dir)
     
-    data_path = os.path.join(
-        project_root,  # Now points to ~/icode/StructGNN
-        "Data",
-        "Static_Linear_Analysis",
-        f"structure_{structure_id}",
-        "structure_graph_NodeAsNode.pt"
-    )
+    # Choose filename based on pseudo parameter
+    if use_generated and use_pseudo:
+        filename = "structure_graph_NodeAsNode_pseudo.pt"
+        data_type = "Pseudo-generated"
+    elif use_generated:
+        filename = "structure_graph_NodeAsNode.pt"
+        data_type = "Generated"
+    else:
+        filename = "structure_graph_NodeAsNode.pt"
+        data_type = "Original"
+    
+    # Build path based on data type
+    if use_generated:
+        # Data_Generated structure: StructGNN/Data_Generated/structure_X/
+        data_path = os.path.join(
+            project_root,
+            "Data_Generated",
+            f"structure_{structure_id}",
+            filename
+        )
+    else:
+        # Original data structure: StructGNN/Data/Static_Linear_Analysis/structure_X/
+        data_path = os.path.join(
+            project_root,
+            "Data",
+            "Static_Linear_Analysis",
+            f"structure_{structure_id}",
+            filename
+        )
     
     if not os.path.exists(data_path):
         raise FileNotFoundError(f"No data found for structure {structure_id} at: {data_path}")
     
-    print(f"Loading structure {structure_id} from:\n{os.path.normpath(data_path)}")
+    print(f"Loading {data_type} structure {structure_id} from:\n{os.path.normpath(data_path)}")
     return torch.load(data_path, weights_only=False)
+
 
 def print_diagnostics(structure_graph):
     """Print comprehensive graph diagnostics"""
@@ -44,10 +74,15 @@ def print_diagnostics(structure_graph):
     for i in range(structure_graph.num_nodes):
         print(f"Node {i}: {structure_graph.x[i].tolist()}")
 
-    #Edge features
-    print("All edge features:")
-    for i in range(structure_graph.edge_attr.size(0)):
-        print(f"Edge {i}: {structure_graph.edge_attr[i].tolist()}")
+    # Edge features
+    print(f"\n{'[EDGE FEATURES]':^50}")
+    if hasattr(structure_graph, 'edge_attr') and structure_graph.edge_attr is not None:
+        print(f"Edge attribute shape: {structure_graph.edge_attr.shape}")
+        print("All edge features:")
+        for i in range(structure_graph.edge_attr.size(0)):
+            print(f"Edge {i}: {structure_graph.edge_attr[i].tolist()}")
+    else:
+        print("No edge attributes found")
     
     # Edge information
     print(f"\n{'[EDGE INFORMATION]':^50}")
@@ -61,9 +96,31 @@ def print_diagnostics(structure_graph):
     print(f"\n{'[ADDITIONAL PROPERTIES]':^50}")
     print(f"Graph keys: {list(structure_graph.keys())}")
     if 'y' in structure_graph:
-        print(f"Target values: {structure_graph.y.shape}")
+        print(f"Target values shape: {structure_graph.y.shape}")
+        print(f"Target values: {structure_graph.y.tolist()}")
+
 
 if __name__ == "__main__":
+    # Ask user to choose data source
+    while True:
+        try:
+            data_choice = input("Choose data source:\n1. Original data (Data folder)\n2. Generated data (Data_Generated folder)\n3. Pseudo-generated data (Data_Generated folder)\nEnter choice (1, 2, or 3): ")
+            if data_choice in ['1', '2', '3']:
+                if data_choice == '1':
+                    use_generated = False
+                    use_pseudo = False
+                elif data_choice == '2':
+                    use_generated = True
+                    use_pseudo = False
+                else:  # data_choice == '3'
+                    use_generated = True
+                    use_pseudo = True
+                break
+            print("Error: Please enter 1, 2, or 3")
+        except ValueError:
+            print("Error: Please enter 1, 2, or 3")
+    
+    # Ask for structure ID
     while True:
         try:
             structure_id = int(input("Enter structure number (1-2000): "))
@@ -73,5 +130,9 @@ if __name__ == "__main__":
         except ValueError:
             print("Error: Please enter a valid integer")
     
-    structure_graph = load_structure(structure_id)
-    print_diagnostics(structure_graph)
+    try:
+        structure_graph = load_structure(structure_id, use_generated, use_pseudo)
+        print_diagnostics(structure_graph)
+    except FileNotFoundError as e:
+        print(f"\nError: {e}")
+        print("Please check if the structure exists in the selected data folder.")
