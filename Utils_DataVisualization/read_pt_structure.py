@@ -43,6 +43,11 @@ def print_diagnostics(structure_graph):
     print("All node features:")
     for i in range(structure_graph.num_nodes):
         print(f"Node {i}: {structure_graph.x[i].tolist()}")
+
+    #Edge features
+    print("All edge features:")
+    for i in range(structure_graph.edge_attr.size(0)):
+        print(f"Edge {i}: {structure_graph.edge_attr[i].tolist()}")
     
     # Edge information
     print(f"\n{'[EDGE INFORMATION]':^50}")
