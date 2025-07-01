@@ -7,7 +7,7 @@ def generate_structure(structure_id, output_dir="Data_Generated"):
     # Randomize parameters with caps
     grid_x = np.random.randint(2, 7)  # 2-6 nodes in x-direction
     grid_z = np.random.randint(2, 7)  # 2-6 nodes in z-direction (depth)
-    num_floors = np.random.randint(1, 7)  # 1-6 floors (Y-direction)
+    num_floors = np.random.randint(2, 7)  # 1-6 floors (Y-direction)
     
     # Create nodes with proper numbering: Y -> Z -> X (floor by floor, row by row)
     nodes = []
