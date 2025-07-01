@@ -34,7 +34,7 @@ model = Structure_GraphNetwork(
 
 # Step 3: Load the state dict (weights)
 script_dir = os.path.dirname(os.path.abspath(__file__))
-checkpoint_folder = '2025_04_17__02_26_56'
+checkpoint_folder = '2025_06_24__16_02_38'
 model_path = os.path.normpath(os.path.join(script_dir, '..', 'Results', 'Static_Linear_Analysis', checkpoint_folder, 'model.pt'))
 model.load_state_dict(torch.load( model_path, map_location=device))
 model.to(device)
