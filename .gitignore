@@ -4,8 +4,6 @@ __pycache__/
 *.pyc
 
 # Ignore models and output
-*.pt
-
 MP TESTING/predicted_output.pt
 
 # Ignore installers
